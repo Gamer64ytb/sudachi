@@ -8,6 +8,6 @@ steps:
     inputs:
       command: publish
       publishDirectory: '$(Build.ArtifactStagingDirectory)'
-      vstsFeedPublish: 'suyu-$(BuildName)'
+      vstsFeedPublish: 'yuzu-$(BuildName)'
       vstsFeedPackagePublish: 'main'
-      packagePublishDescription: 'Suyu Windows and Linux Executable Packages'
+      packagePublishDescription: 'Yuzu Windows and Linux Executable Packages'

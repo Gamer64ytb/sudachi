@@ -4,5 +4,5 @@
 steps:
   - script: mkdir artifacts || echo 'X' > artifacts/T1.txt
   - publish: artifacts
-    artifact: 'suyu-$(BuildName)-mock'
+    artifact: 'yuzu-$(BuildName)-mock'
     displayName: 'Upload Artifacts'

@@ -5,12 +5,12 @@ steps:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Windows Release'
     inputs:
-      artifactName: 'suyu-$(BuildName)-windows-msvc'
+      artifactName: 'yuzu-$(BuildName)-windows-msvc'
       buildType: 'current'
       targetPath: '$(Build.ArtifactStagingDirectory)'
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Linux Release'
     inputs:
-      artifactName: 'suyu-$(BuildName)-linux'
+      artifactName: 'yuzu-$(BuildName)-linux'
       buildType: 'current'
       targetPath: '$(Build.ArtifactStagingDirectory)'

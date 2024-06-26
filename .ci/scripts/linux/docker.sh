@@ -1,6 +1,6 @@
 #!/bin/bash -ex
+
 # SPDX-FileCopyrightText: 2019 yuzu Emulator Project
-# SPDX-FileCopyrightText: 2024 suyu Emulator Project
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 # Exit on error, rather than continuing with the rest of the script.
@@ -8,37 +8,32 @@ set -e
 
 ccache -s
 
-git submodule update --init --recursive
-
 mkdir build || true && cd build
 cmake .. \
       -DBoost_USE_STATIC_LIBS=ON \
       -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-			-DSUYU_USE_PRECOMPILED_HEADERS=OFF \
-			-DDYNARMIC_USE_PRECOMPILED_HEADERS=OFF \
       -DCMAKE_CXX_FLAGS="-march=x86-64-v2" \
-      -DCMAKE_CXX_COMPILER=/usr/local/bin/g++ \
-      -DCMAKE_C_COMPILER=/usr/local/bin/gcc \
+      -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ \
+      -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc \
       -DCMAKE_INSTALL_PREFIX="/usr" \
       -DDISPLAY_VERSION=$1 \
-      -DENABLE_COMPATIBILITY_LIST_DOWNLOAD=OFF \
-      -DENABLE_QT_TRANSLATION=OFF \
+      -DENABLE_COMPATIBILITY_LIST_DOWNLOAD=ON \
+      -DENABLE_QT_TRANSLATION=ON \
       -DUSE_DISCORD_PRESENCE=ON \
-      -DSUYU_ENABLE_COMPATIBILITY_REPORTING=${ENABLE_COMPATIBILITY_REPORTING:-"OFF"} \
-      -DSUYU_USE_BUNDLED_FFMPEG=ON \
-      -DSUYU_ENABLE_LTO=OFF \
-      -DSUYU_CRASH_DUMPS=ON \
-      -DSUYU_USE_FASTER_LD=ON \
+      -DYUZU_ENABLE_COMPATIBILITY_REPORTING=${ENABLE_COMPATIBILITY_REPORTING:-"OFF"} \
+      -DYUZU_USE_BUNDLED_FFMPEG=ON \
+      -DYUZU_ENABLE_LTO=ON \
+      -DYUZU_CRASH_DUMPS=ON \
       -GNinja
 
 ninja
 
-ccache -sv
+ccache -s
 
 ctest -VV -C Release
 
 # Separate debug symbols from specified executables
-for EXE in suyu; do
+for EXE in yuzu; do
     EXE_PATH="bin/$EXE"
     # Copy debug symbols out
     objcopy --only-keep-debug $EXE_PATH $EXE_PATH.debug
@@ -51,13 +46,12 @@ done
 find bin/ -type f -not -regex '.*.debug' -exec strip -g {} ';'
 
 DESTDIR="$PWD/AppDir" ninja install
-rm -vf AppDir/usr/bin/suyu-cmd AppDir/usr/bin/suyu-tester
+rm -vf AppDir/usr/bin/yuzu-cmd AppDir/usr/bin/yuzu-tester
 
 # Download tools needed to build an AppImage
-wget -nc https://git.suyu.dev/suyu/ext-linux-bin/raw/branch/main/appimage/deploy-linux.sh
-wget -nc https://git.suyu.dev/suyu/ext-linux-bin/raw/branch/main/appimage/exec-x86_64.so
-wget -nc https://git.suyu.dev/suyu/AppImageKit-checkrt/raw/branch/gh-workflow/AppRun
-
+wget -nc https://raw.githubusercontent.com/yuzu-emu/ext-linux-bin/main/appimage/deploy-linux.sh
+wget -nc https://raw.githubusercontent.com/yuzu-emu/AppImageKit-checkrt/old/AppRun.sh
+wget -nc https://github.com/yuzu-emu/ext-linux-bin/raw/main/appimage/exec-x86_64.so
 # Set executable bit
 chmod 755 \
     deploy-linux.sh \
@@ -71,13 +65,13 @@ mkdir -p AppDir/usr/optional
 mkdir -p AppDir/usr/optional/libstdc++
 mkdir -p AppDir/usr/optional/libgcc_s
 
-# Deploy suyu's needed dependencies
-DEPLOY_QT=1 ./deploy-linux.sh AppDir/usr/bin/suyu AppDir
+# Deploy yuzu's needed dependencies
+DEPLOY_QT=1 ./deploy-linux.sh AppDir/usr/bin/yuzu AppDir
 
 # Workaround for libQt5MultimediaGstTools indirectly requiring libwayland-client and breaking Vulkan usage on end-user systems
 find AppDir -type f -regex '.*libwayland-client\.so.*' -delete -print
 
-# Workaround for building suyu with GCC 10 but also trying to distribute it to Ubuntu 18.04 et al.
+# Workaround for building yuzu with GCC 10 but also trying to distribute it to Ubuntu 18.04 et al.
 # See https://github.com/darealshinji/AppImageKit-checkrt
 cp exec-x86_64.so AppDir/usr/optional/exec.so
 cp AppRun.sh AppDir/AppRun

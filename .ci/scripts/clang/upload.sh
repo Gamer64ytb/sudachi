@@ -5,7 +5,7 @@
 
 . .ci/scripts/common/pre-upload.sh
 
-REV_NAME="suyu-linux-${GITDATE}-${GITREV}"
+REV_NAME="yuzu-linux-${GITDATE}-${GITREV}"
 ARCHIVE_NAME="${REV_NAME}.tar.xz"
 COMPRESSION_FLAGS="-cJvf"
 
@@ -17,7 +17,7 @@ fi
 
 mkdir "$DIR_NAME"
 
-cp build/bin/suyu-cmd "$DIR_NAME"
-cp build/bin/suyu "$DIR_NAME"
+cp build/bin/yuzu-cmd "$DIR_NAME"
+cp build/bin/yuzu "$DIR_NAME"
 
 . .ci/scripts/common/post-upload.sh

@@ -5,13 +5,13 @@
 
 . ./.ci/scripts/common/pre-upload.sh
 
-REV_NAME="suyu-${GITDATE}-${GITREV}"
+REV_NAME="yuzu-${GITDATE}-${GITREV}"
 
 BUILD_FLAVOR="mainline"
 
 BUILD_TYPE_LOWER="release"
 BUILD_TYPE_UPPER="Release"
-if [ "${GITHUB_REPOSITORY}" == "suyu/suyu" ]; then
+if [ "${GITHUB_REPOSITORY}" == "yuzu-emu/yuzu" ]; then
     BUILD_TYPE_LOWER="relWithDebInfo"
     BUILD_TYPE_UPPER="RelWithDebInfo"
 fi
